@@ -41,7 +41,7 @@ app.post("/register", async (req, res) => {
   if (!username || !password) {
     return res.status(400).send("Name and password are required");
   }
-  const authLevel = 7;
+  const authLevel = 0;
 
   //hash the password
   const saltRounds = 12;
