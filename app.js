@@ -36,12 +36,12 @@ app.get("/data/:chartName", (req, res) => {
   }
 });
 
-app.post("/createUser", async (req, res) => {
-  // const { name, password, authlevel } = req.body;
-
-  const name = "test";
-  const password = "test";
-  const authLevel = 1;
+app.post("/register", async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).send("Name and password are required");
+  }
+  const authLevel = 7;
 
   //hash the password
   const saltRounds = 12;
@@ -51,7 +51,7 @@ app.post("/createUser", async (req, res) => {
   try {
     const query =
       " INSERT INTO users (Username, Password, AuthLevel) VALUES ($1, $2, $3);";
-    const values = [name, hashedPassword, authLevel];
+    const values = [username, hashedPassword, authLevel];
     const result = await pool.query(query, values);
 
     res.status(201).json(result.rows[0]);
@@ -64,14 +64,16 @@ app.post("/createUser", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  // const { name, password } = req.body;
+  const { username, password } = req.body;
 
-  const name = "test";
-  const password = "test";
+  // Verify that name and password are provided
+  if (!username || !password) {
+    return res.status(400).send("Name and password are required");
+  }
 
   try {
     const query = "SELECT * FROM users WHERE Username = $1;";
-    const values = [name];
+    const values = [username];
     const result = await pool.query(query, values);
 
     // Check if the user exists
@@ -81,17 +83,21 @@ app.post("/login", async (req, res) => {
 
     const user = result.rows[0];
     const passwordMatch = await bcrypt.compare(password, user.password);
-    console.log(passwordMatch);
 
     if (!passwordMatch) {
       return res.status(401).send("Invalid username or password");
     }
 
     res.status(200).json({ message: "valid", authLevel: user.authlevel });
+    console.log("User logged in");
   } catch (err) {
     console.error(err);
     res.status(500).send(err.detail);
   }
+});
+
+app.post("/register", (req, res) => {
+  console.log("Register page");
 });
 
 const port = process.env.PORT || 3000;
