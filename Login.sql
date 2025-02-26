@@ -1,4 +1,4 @@
--- Create the database
+/* -- Create the database
 CREATE DATABASE UserDatabase;
 
 -- Connect to the newly created database
@@ -10,4 +10,4 @@ CREATE TABLE Users (
     Username VARCHAR(50) NOT NULL UNIQUE,
     Password VARCHAR(255) NOT NULL,
     AuthLevel INT NOT NULL
-);
+); */
